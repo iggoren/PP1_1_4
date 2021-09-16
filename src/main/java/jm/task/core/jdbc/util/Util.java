@@ -13,19 +13,33 @@ public class Util {
     private Util() {
     }
 
+    private static volatile Util instance;
+
+    public static Util getInstance() {
+        Util localInstance = instance;
+        if (localInstance == null) {
+            synchronized (Util.class) {
+                localInstance = instance;
+                if (localInstance == null) {
+                    instance = localInstance = new Util();
+                }
+            }
+        }
+        return localInstance;
+    }
+
     public static Connection getConnection() {
         Connection connection = null;
 
         try {
-            if (connection == null) {
-                Class.forName("com.mysql.cj.jdbc.Driver");
-                connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
-                if (!connection.isClosed()) {
-                    System.out.println("соединение установлено");
-                }
+            // Class.forName("com.mysql.cj.jdbc.Driver");
+            connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+            if (!connection.isClosed()) {
+                System.out.println("соединение установлено");
             }
+
         } catch (
-                SQLException | ClassNotFoundException e) {
+                SQLException e) {
             System.out.println("ошибка соединения");
         }
         return connection;

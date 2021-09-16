@@ -14,6 +14,7 @@ public class Util {
     }
 
     private static volatile Util instance;
+    private static Connection connection = null;
 
     public static Util getInstance() {
         Util localInstance = instance;
@@ -29,15 +30,12 @@ public class Util {
     }
 
     public static Connection getConnection() {
-        Connection connection = null;
-
         try {
             // Class.forName("com.mysql.cj.jdbc.Driver");
             connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
             if (!connection.isClosed()) {
                 System.out.println("соединение установлено");
             }
-
         } catch (
                 SQLException e) {
             System.out.println("ошибка соединения");

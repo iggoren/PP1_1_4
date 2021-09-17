@@ -25,6 +25,7 @@ public class UserDaoJDBCImpl implements UserDao {
             statement.executeUpdate(sql);
 
             System.out.println("Таблица создана!");
+            connection.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -35,6 +36,7 @@ public class UserDaoJDBCImpl implements UserDao {
         final Connection connection = Util.getInstance().getConnection();
         try (Statement statement = connection.createStatement()) {
             statement.executeUpdate("DROP TABLE IF EXISTS users");
+            connection.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -49,9 +51,9 @@ public class UserDaoJDBCImpl implements UserDao {
             preparedStatement.setByte(3, age);
             preparedStatement.executeUpdate();
             System.out.println("User с именем – " + name + " добавлен в базу данных");
+            connection.close();
         } catch (SQLException e) {
             e.printStackTrace();
-
         }
     }
 
@@ -62,6 +64,7 @@ public class UserDaoJDBCImpl implements UserDao {
             String sql = "DELETE FROM users where id";
             statement.executeUpdate(sql);
             System.out.println("User " + id + " удален");
+            connection.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -81,7 +84,7 @@ public class UserDaoJDBCImpl implements UserDao {
                 users.setAge(rs.getByte("age"));
                 result.add(users);
             }
-
+            connection.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -93,6 +96,7 @@ public class UserDaoJDBCImpl implements UserDao {
         try (Statement statement = connection.createStatement()) {
             String sql = "DELETE FROM users";
             statement.executeUpdate(sql);
+            connection.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }

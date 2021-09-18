@@ -1,11 +1,12 @@
 package jm.task.core.jdbc.dao;
 
-import com.mysql.cj.xdevapi.Session;
 import jm.task.core.jdbc.model.User;
 import jm.task.core.jdbc.util.Util;
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
-import java.sql.Connection;
 import java.util.List;
 
 public class UserDaoHibernateImpl implements UserDao {
@@ -13,35 +14,53 @@ public class UserDaoHibernateImpl implements UserDao {
 
     }
 
+    //SessionFactory factory = Util.getSessionFactory();
 
     @Override
     public void createUsersTable() {
-        Transaction transaction = null;
-                // auto close session object
-        try (Session session = Util.getSessionFactory().getSession() {
+        Session session = Util.getSessionFactory().openSession();
+        Transaction tx = null;
+        try {
 
-            // start the transaction
-           transaction = session.beginTransaction();
-
-            // save student object
-            session.save(student);
-
-            // commit transction
-            transaction.commit();
+            String sql = "CREATE TABLE IF NOT EXISTS users (Id int not null primary key auto_increment," +
+                    " name VARCHAR(64), lastName VARCHAR(64),age INT)";
+            tx = session.beginTransaction();
+            session.createSQLQuery(sql).executeUpdate();
+            tx.commit();
+            System.out.println("таблица создана");
         } catch (Exception e) {
-            if (transaction != null) {
-                transaction.rollback();
-            }
+            if (tx != null) tx.rollback();
+            throw e;
+        } finally {
+            session.close();
         }
     }
 
     @Override
     public void dropUsersTable() {
-
+        Session session = Util.getSessionFactory().openSession();
+        //Transaction transaction = session.beginTransaction();
+        String sql = "DROP TABLE IF EXISTS users";
+        session.createSQLQuery(sql).executeUpdate();
+        session.close();
     }
 
     @Override
     public void saveUser(String name, String lastName, byte age) {
+        Session session = Util.getSessionFactory().openSession();
+        Transaction tx = null;
+        try {
+            User user = new User(name, lastName, age);
+            tx = session.beginTransaction();
+            session.save(user);
+            tx.commit();
+            System.out.println("User с именем – " + name + " добавлен в базу данных");
+        } catch (Exception e) {
+            if (tx != null) tx.rollback();
+            throw e;
+        } finally {
+            session.close();
+        }
 
     }
 

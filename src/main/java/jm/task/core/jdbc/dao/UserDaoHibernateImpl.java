@@ -80,7 +80,7 @@ public class UserDaoHibernateImpl implements UserDao {
         Transaction tx = null;
         try {
             tx = session.beginTransaction();
-            session.delete(session.get(User.class, id));
+            session.remove(session.get(User.class, id));
             tx.commit();
             System.out.println("User " + id + " удален");
         } catch (Exception e) {

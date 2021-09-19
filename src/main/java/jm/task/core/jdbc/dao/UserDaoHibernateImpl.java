@@ -2,23 +2,24 @@ package jm.task.core.jdbc.dao;
 
 import jm.task.core.jdbc.model.User;
 import jm.task.core.jdbc.util.Util;
-import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class UserDaoHibernateImpl implements UserDao {
+
     public UserDaoHibernateImpl() {
 
     }
 
-    //SessionFactory factory = Util.getSessionFactory();
+    SessionFactory factory = Util.getSessionFactory();
 
     @Override
     public void createUsersTable() {
-        Session session = Util.getSessionFactory().openSession();
+        Session session = factory.openSession();
         Transaction tx = null;
         try {
 
@@ -38,16 +39,25 @@ public class UserDaoHibernateImpl implements UserDao {
 
     @Override
     public void dropUsersTable() {
-        Session session = Util.getSessionFactory().openSession();
-        //Transaction transaction = session.beginTransaction();
-        String sql = "DROP TABLE IF EXISTS users";
-        session.createSQLQuery(sql).executeUpdate();
-        session.close();
+        Session session = factory.openSession();
+        Transaction tx = null;
+        try {
+            String sql = "DROP TABLE IF EXISTS users";
+            tx = session.beginTransaction();
+            session.createSQLQuery(sql).executeUpdate();
+            tx.commit();
+            System.out.println("таблица удалена");
+        } catch (Exception e) {
+            if (tx != null) tx.rollback();
+            throw e;
+        } finally {
+            session.close();
+        }
     }
 
     @Override
     public void saveUser(String name, String lastName, byte age) {
-        Session session = Util.getSessionFactory().openSession();
+        Session session = factory.openSession();
         Transaction tx = null;
         try {
             User user = new User(name, lastName, age);
@@ -66,16 +76,53 @@ public class UserDaoHibernateImpl implements UserDao {
 
     @Override
     public void removeUserById(long id) {
-
+        Session session = factory.openSession();
+        Transaction tx = null;
+        try {
+            tx = session.beginTransaction();
+            session.delete(session.get(User.class, id));
+            tx.commit();
+            System.out.println("User " + id + " удален");
+        } catch (Exception e) {
+            if (tx != null) tx.rollback();
+            throw e;
+        } finally {
+            session.close();
+        }
     }
 
     @Override
     public List<User> getAllUsers() {
-        return null;
+        List<User> users = new ArrayList<>();
+        Session session = factory.openSession();
+        Transaction tx = null;
+        try {
+            tx = session.beginTransaction();
+            users = session.createQuery("from User").getResultList();
+            tx.commit();
+            return users;
+        } catch (Exception e) {
+            if (tx != null) tx.rollback();
+            throw e;
+        } finally {
+            session.close();
+        }
     }
 
     @Override
     public void cleanUsersTable() {
-
+        Session session = factory.openSession();
+        Transaction tx = null;
+        try {
+            tx = session.beginTransaction();
+            session.createQuery("delete User").executeUpdate();
+            tx.commit();
+            System.out.println("Таблица очищена");
+        } catch (Exception e) {
+            if (tx != null) tx.rollback();
+            throw e;
+        } finally {
+            session.close();
+        }
     }
 }

@@ -14,7 +14,7 @@ import java.sql.SQLException;
 import java.util.Properties;
 
 public class Util {
-    private static final String URL = "jdbc:mySQL://localhost:3306/mydbtest";
+    private static final String URL = "jdbc:mySQL://localhost:3306/test1";
     private static final String USERNAME = "root";
     private static final String PASSWORD = "root";
 
@@ -60,7 +60,7 @@ public class Util {
                     // Hibernate settings equivalent to hibernate.cfg.xml's properties
                     Properties settings = new Properties();
                     settings.put(Environment.DRIVER, "com.mysql.cj.jdbc.Driver");
-                    settings.put(Environment.URL, "jdbc:mysql://localhost:3306/mydbtest?useSSL=false");
+                    settings.put(Environment.URL, "jdbc:mysql://localhost:3306/test1?useSSL=false");
                     settings.put(Environment.USER, "root");
                     settings.put(Environment.PASS, "root");
                     settings.put(Environment.DIALECT, "org.hibernate.dialect.MySQLDialect");
